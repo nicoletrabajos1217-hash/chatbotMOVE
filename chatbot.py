@@ -54,27 +54,35 @@ UBICACION_MOVE = "📍 Ubicación: Calle 17, Barrio Balmoral"
 # --- Función principal para responder mensajes ---
 def responder_mensaje(mensaje, estado):
     try:
-        # Inicializar historial y nombre si no existe
+        # Inicializar historial y variables de estado si no existen
         if "historial" not in estado:
             estado["historial"] = []
         if "nombre_usuario" not in estado:
             estado["nombre_usuario"] = None
+        if "nombre_preguntado" not in estado:
+            estado["nombre_preguntado"] = False
         if "cita_paso" not in estado:
             estado["cita_paso"] = 0
         if "cita_info" not in estado:
             estado["cita_info"] = {}
 
-        # --- Pedir nombre al inicio de manera amable ---
+        # --- Preguntar nombre al inicio ---
         if not estado["nombre_usuario"]:
-            estado["nombre_usuario"] = mensaje.strip()
-            saludo = (
-                f"¡Hola {estado['nombre_usuario']}! 😊 Bienvenida/o a MOVE (Fisioterapia y Entrenamiento).\n"
-                "Soy MoveAssist, tu asistente virtual, y estoy aquí para ayudarte con todo lo relacionado con nuestros servicios.\n"
-                "Puedes preguntarme por precios, horarios, ubicación, agendar citas, o cualquier duda sobre fisioterapia y entrenamiento.\n"
-                "Para empezar, ¿en qué puedo ayudarte hoy?"
-            )
-            estado["historial"].append({"usuario": mensaje, "bot": saludo})
-            return saludo
+            if not estado["nombre_preguntado"]:
+                estado["nombre_preguntado"] = True
+                respuesta = "¡Hola! 😊 Antes de empezar, ¿me puedes decir tu nombre, por favor?"
+                estado["historial"].append({"usuario": mensaje, "bot": respuesta})
+                return respuesta
+            else:
+                estado["nombre_usuario"] = mensaje.strip()
+                saludo = (
+                    f"¡Encantada de conocerte, {estado['nombre_usuario']}! "
+                    "Soy MoveAssist, tu asistente virtual en MOVE.\n"
+                    "Puedes preguntarme por precios, horarios, ubicación, agendar citas, o cualquier duda sobre fisioterapia y entrenamiento.\n"
+                    "¿En qué puedo ayudarte hoy?"
+                )
+                estado["historial"].append({"usuario": mensaje, "bot": saludo})
+                return saludo
 
         # --- Agendamiento de citas paso a paso ---
         if estado["cita_paso"] > 0:
@@ -149,3 +157,4 @@ def responder_mensaje(mensaje, estado):
 
     except Exception as e:
         return f"⚠️ Ocurrió un error: {e}"
+
