@@ -61,7 +61,7 @@ st.markdown("""
 # --- Header MOVE ---
 st.markdown("""
     <div class='header-move'>
-        <h1>🏃‍♂️ MOVE - Fisioterapia & Entrenamiento</h1>
+        <h1>🏃‍♂️ MOVE - PLATAFORMA DE BIENESTAR</h1>
         <p style='margin: 0; font-size: 16px;'>💬 Asistente Virtual - MoveAssist</p>
     </div>
 """, unsafe_allow_html=True)
