@@ -127,7 +127,13 @@ def responder_mensaje(mensaje, estado):
                     "¿Deseas conocer los precios de fisioterapia o de entrenamiento?\n"
                     "Escribe 'fisioterapia' o 'entrenamiento' para ver los detalles."
                 )
-        elif "fisioterapia" in msg_lower:
+        elif "a domicilio" in msg_lower:
+            # Si preguntan por servicios a domicilio, mostrar los de fisioterapia
+            respuesta_texto = (
+                "Sí, contamos con servicios de fisioterapia a domicilio. 🏠\n\n"
+                f"{SERVICIOS_FISIOTERAPIA}"
+            )
+        elif "fisioterapia" in msg_lower or "terapia" in msg_lower:
             respuesta_texto = SERVICIOS_FISIOTERAPIA
         elif "entrenamiento" in msg_lower:
             respuesta_texto = SERVICIOS_ENTRENAMIENTO
@@ -137,15 +143,35 @@ def responder_mensaje(mensaje, estado):
             respuesta_texto = UBICACION_MOVE
         elif "urgencia" in msg_lower or "doctor" in msg_lower:
             respuesta_texto = f"📞 Para urgencias, comunícate al {TELEFONO_URGENCIAS}."
-        elif "fisioterapeuta" in msg_lower:
-            respuesta_texto = f"👨‍⚕️ Fisioterapeuta: {FISIOTERAPEUTA} (su asistente responde tus consultas)"
+        elif (
+            "fisioterapeuta" in msg_lower
+            or "fisio" in msg_lower
+            or "quién atiende" in msg_lower
+            or "quien atiende" in msg_lower
+            or "quien hace las terapias" in msg_lower
+            or "quién hace las terapias" in msg_lower
+        ):
+            respuesta_texto = (
+                f"👨‍⚕️ Nuestro fisioterapeuta es {FISIOTERAPEUTA}. "
+                "Él se encarga de todas las sesiones de fisioterapia, "
+                "y puedes agendar tu cita directamente con él. 💙"
+            )
         else:
-            # Prompt para Gemini limitado a información real de MOVE
+            # Gemini solo usa información real de MOVE
             prompt = (
-                f"Eres MoveAssist, asistente virtual de MOVE (Fisioterapia y Entrenamiento).\n"
-                f"- Solo usa información real de MOVE (precios, horarios, ubicación, contacto, fisioterapeuta).\n"
-                f"- Mantén la respuesta breve, clara y profesional.\n"
-                f"- Historial de la conversación: {estado['historial']}\n"
+                "Eres MoveAssist, asistente virtual de MOVE (Fisioterapia y Entrenamiento).\n"
+                "Responde solo con base en la siguiente información oficial:\n\n"
+                f"- Servicios de fisioterapia:\n{SERVICIOS_FISIOTERAPIA}\n\n"
+                f"- Servicios de entrenamiento:\n{SERVICIOS_ENTRENAMIENTO}\n\n"
+                f"- Horarios:\n{HORARIOS_MOVE}\n\n"
+                f"- Ubicación:\n{UBICACION_MOVE}\n\n"
+                f"- Teléfono de urgencias: {TELEFONO_URGENCIAS}\n"
+                f"- Fisioterapeuta: {FISIOTERAPEUTA}\n\n"
+                "⚠️ No inventes información. Si no sabes algo, indica que no tienes ese dato.\n"
+                "Si preguntan por fisioterapia a domicilio, confirma que sí está disponible.\n"
+                "Si preguntan por el fisioterapeuta, responde que es Santiago Ortiz y "
+                "sugiere agendar la cita con él.\n\n"
+                f"Historial: {estado['historial']}\n"
                 f"Usuario: {mensaje}"
             )
             respuesta = model.generate_content(prompt)
@@ -157,4 +183,3 @@ def responder_mensaje(mensaje, estado):
 
     except Exception as e:
         return f"⚠️ Ocurrió un error: {e}"
-
